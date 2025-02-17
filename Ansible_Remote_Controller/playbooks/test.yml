@@ -1,0 +1,6 @@
+# New Ansible Playbook
+
+- name: Example Task
+  hosts: all
+  tasks:
+    - debug: msg='Hello, Ansible!'

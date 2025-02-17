@@ -1,0 +1,48 @@
+- name: Backup all dotfiles
+  hosts: localhost
+  gather_facts: true  # Ensures we get user environment details
+  tasks:
+    - name: Define home directory
+      set_fact:
+        home_dir: "{{ ansible_env.HOME }}"
+
+    - name: Check if Desktop exists
+      stat:
+        path: "{{ home_dir }}/Desktop"
+      register: desktop_stat
+
+    - name: Set backup destination to Desktop if it exists
+      set_fact:
+        backup_dest: "{{ home_dir }}/Desktop/dotfiles_backup"
+      when: desktop_stat.stat.exists
+
+    - name: Set backup destination to Home if Desktop does not exist
+      set_fact:
+        backup_dest: "{{ home_dir }}/dotfiles_backup"
+      when: backup_dest is not defined
+
+    - name: Ensure backup directory exists
+      file:
+        path: "{{ backup_dest }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy all dotfiles (excluding directories)
+      shell: |
+        mkdir -p "{{ backup_dest }}"
+        find "{{ home_dir }}" -maxdepth 1 -type f -name ".*" -exec cp {} "{{ backup_dest }}/" \;
+      args:
+        executable: /bin/bash
+
+    - name: Rename dotfiles to be visible
+      shell: |
+        cd "{{ backup_dest }}"
+        for file in .*; do
+          [ "$file" != "." ] && [ "$file" != ".." ] && mv "$file" "${file#.}";
+        done
+      args:
+        executable: /bin/bash
+
+    - name: Display backup location
+      debug:
+        msg: "Dotfiles backup is stored at {{ backup_dest }}"

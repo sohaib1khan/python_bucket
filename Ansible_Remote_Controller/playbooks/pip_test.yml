@@ -1,0 +1,21 @@
+---
+- name: Test Pip Installation and Package Management
+  hosts: localhost
+  gather_facts: yes
+  tasks:
+
+    - name: Check if pip is installed
+      command: python3 -m pip --version
+      register: pip_check
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Install pip for user (if missing)
+      command: python3 -m ensurepip --user
+      when: pip_check.failed
+
+    - name: Upgrade pip for current user
+      command: python3 -m pip install --user --upgrade pip
+
+    - name: Install test package (requests)
+      command: python3 -m pip install --user requests

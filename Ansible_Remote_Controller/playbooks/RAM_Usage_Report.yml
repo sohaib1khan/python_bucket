@@ -1,0 +1,21 @@
+---
+- name: Check and Display RAM Usage
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+    - name: Get memory usage information
+      command: free -h
+      register: ram_usage_output
+      changed_when: false
+
+    - name: Format RAM usage as simple text
+      set_fact:
+        formatted_ram_output: |
+          🚀 RAM Usage Report
+          {% set lines = ram_usage_output.stdout_lines %}
+          Total: {{ lines[1].split()[1] }}, Used: {{ lines[1].split()[2] }}, Free: {{ lines[1].split()[3] }}
+
+    - name: Display formatted RAM usage
+      debug:
+        msg: "{{ formatted_ram_output }}"

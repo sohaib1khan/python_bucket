@@ -1,0 +1,22 @@
+---
+- name: Check and Display Disk Usage
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+    - name: Get disk usage information
+      command: df -h --output=target,pcent
+      register: disk_usage_output
+      changed_when: false
+
+    - name: Format disk usage as simple text (Plain Output)
+      set_fact:
+        formatted_output: |
+          🚀 Disk Usage Report
+          {% for line in disk_usage_output.stdout_lines[1:] %}
+          {{ line.split()[0] }} - {{ line.split()[1] }} Used
+          {% endfor %}
+
+    - name: Display formatted disk usage
+      debug:
+        msg: "{{ formatted_output }}"

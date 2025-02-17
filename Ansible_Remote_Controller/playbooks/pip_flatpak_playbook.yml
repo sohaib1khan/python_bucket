@@ -1,0 +1,33 @@
+---
+- name: Manage Pip and Flatpak Packages (User-Level)
+  hosts: localhost
+  tasks:
+
+    - name: Check if pip is installed
+      command: python3 -m pip --version
+      register: pip_check
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Install pip for user (if missing)
+      command: python3 -m ensurepip --user
+      when: pip_check.rc != 0 and ansible_distribution != "Ubuntu" and ansible_distribution != "Debian"
+      changed_when: false
+
+    - name: Upgrade pip for current user
+      command: python3 -m pip install --upgrade --user pip
+      changed_when: false
+
+    - name: Install required Python packages (without sudo)
+      command: python3 -m pip install --user requests ansible numpy flask
+      changed_when: false
+
+    - name: Update all installed Flatpak applications
+      command: flatpak update -y
+      changed_when: false
+      ignore_errors: yes  # Avoid errors if Flatpak is not installed
+
+    - name: Install specific Flatpak apps (User-level)
+      command: flatpak install -y --user flathub org.mozilla.firefox
+      changed_when: false
+      ignore_errors: yes  # Avoid errors if Flatpak is not installed

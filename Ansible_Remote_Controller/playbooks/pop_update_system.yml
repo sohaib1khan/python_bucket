@@ -1,0 +1,31 @@
+- name: Update and maintain the system
+  hosts: all
+  become: yes
+  become_method: sudo  # Force Ansible to use sudo explicitly
+  tasks:
+    - name: Update package lists
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+
+    - name: Remove unnecessary packages
+      apt:
+        autoremove: yes
+
+    - name: Clean up APT cache
+      command: apt clean
+
+    - name: Update Flatpak applications
+      command: flatpak update -y
+      ignore_errors: yes  # Ignore errors in case Flatpak is not installed
+
+    - name: Install Vulkan and Mesa utilities
+      apt:
+        name:
+          - mesa-utils
+          - mesa-vulkan-drivers
+          - vulkan-tools
+        state: present
