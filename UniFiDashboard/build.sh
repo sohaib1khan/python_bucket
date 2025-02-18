@@ -3,7 +3,7 @@
 # Set script to exit on error
 set -e
 
-echo "🛠️  Checking for Python and Pip..."
+echo "🛠️ Checking for Python and Pip..."
 
 # Detect Python version
 if command -v python3 &>/dev/null; then
@@ -42,18 +42,29 @@ echo "🔄 Updating UniFi Controller IP in main.py..."
 sed -i "s|UNIFI_HOST = .*|UNIFI_HOST = \"$UNIFI_IP\"|" main.py
 echo "✅ UniFi Controller IP updated to: $UNIFI_IP"
 
+# Create a virtual environment
+echo "🐍 Setting up virtual environment..."
+$PYTHON -m venv venv
+source venv/bin/activate  # Activate the virtual environment
+
 # Install dependencies
-echo "📦 Installing dependencies..."
+echo "📦 Installing dependencies in virtual environment..."
+$PIP install --upgrade pip
 $PIP install -r requirements.txt
 $PIP install pyinstaller
 
 # Run PyInstaller to create an executable
 APP_NAME="unifi_dashboard"
 echo "🚀 Building the application with PyInstaller..."
-$PYTHON -m PyInstaller --onefile --name "$APP_NAME" main.py
+pyinstaller --onefile --name "$APP_NAME" main.py
+
+# Deactivate and remove the virtual environment
+deactivate
+echo "🧹 Cleaning up virtual environment..."
+rm -rf venv
 
 # Clean up unnecessary files
-echo "🧹 Cleaning up..."
+echo "🧹 Removing temporary files..."
 rm -rf build *.spec
 
 # Provide final steps
