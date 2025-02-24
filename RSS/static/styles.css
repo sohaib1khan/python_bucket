@@ -1,0 +1,92 @@
+/* 🌑 Futuristic Cyber Goth Theme */
+body {
+    background-color: #111; /* Deep black */
+    color: #ddd; /* Soft white-gray text */
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Headings */
+h2, h3 {
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #0ff; /* Neon Cyan */
+    letter-spacing: 1px;
+    text-shadow: 0px 0px 10px rgba(0, 255, 255, 0.8);
+}
+
+/* Form Styling */
+form {
+    background-color: #222;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Input Fields */
+input {
+    background-color: #1a1a1a;
+    border: 2px solid #444;
+    color: #0ff;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+input:focus {
+    border-color: #0ff;
+    outline: none;
+}
+
+/* Buttons */
+button {
+    background-color: #0ff;
+    color: #111;
+    font-weight: bold;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #ff00ff;
+    color: #fff;
+    box-shadow: 0px 0px 10px rgba(255, 0, 255, 0.6);
+}
+
+/* Feed List */
+.list-group-item {
+    background-color: #222;
+    color: #0ff;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 5px;
+    transition: background 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: #0ff;
+    color: #111;
+}
+
+/* Articles */
+.card {
+    background-color: #181818;
+    color: #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.2);
+}
+
+/* Links */
+a {
+    color: #ff00ff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
