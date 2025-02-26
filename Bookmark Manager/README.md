@@ -124,3 +124,7 @@ Create a new `config.json` file:
 
 This document provides clear instructions on using, configuring, and troubleshooting the application.
 
+
+## **Demo**
+
+![Demo Image](media/bookmark_manager.png)
