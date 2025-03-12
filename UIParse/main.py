@@ -95,8 +95,13 @@ class XAMLConverterApp(QWidget):
 
         self.save_btn = QPushButton("Save as File")
         self.save_btn.setStyleSheet("background-color: #e74c3c; color: white; font-weight: bold; padding: 5px; border-radius: 5px;")
-
         self.save_btn.clicked.connect(self.save_file)
+
+        # New Reset Button
+        self.reset_btn = QPushButton("Reset")
+        self.reset_btn.setStyleSheet("background-color: #95a5a6; color: white; font-weight: bold; padding: 5px; border-radius: 5px;")
+        self.reset_btn.clicked.connect(self.reset_output)
+
 
         self.output_area = QPlainTextEdit()
         self.output_area.setReadOnly(True)
@@ -123,6 +128,8 @@ class XAMLConverterApp(QWidget):
         btn_layout = QVBoxLayout()
         btn_layout.addWidget(self.copy_btn)
         btn_layout.addWidget(self.save_btn)
+        btn_layout.addWidget(self.reset_btn)
+
         layout.addLayout(btn_layout)
 
         self.setLayout(layout)
@@ -194,6 +201,10 @@ class XAMLConverterApp(QWidget):
         clipboard = QApplication.clipboard()
         clipboard.setText(self.output_area.toPlainText())
         QMessageBox.information(self, "Copied", "Code copied to clipboard!")
+
+    def reset_output(self):
+        self.output_area.clear()
+
 
     def save_file(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "VB Script (*.vb);;Text File (*.txt)")
