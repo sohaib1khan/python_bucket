@@ -1,15 +1,28 @@
-
 import json
 import sys
 import xmltodict
-import yaml # Ensure you install PyYAML with `pip install pyyaml`
+import yaml  # Ensure you install PyYAML with `pip install pyyaml`
 import xml.dom.minidom as minidom
+from PyQt6.QtWidgets import QTextEdit
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QFileDialog, QPlainTextEdit,
     QMessageBox, QComboBox, QHBoxLayout
 )
 from PyQt6.QtGui import QFont, QColor, QTextCharFormat, QSyntaxHighlighter
 from PyQt6.QtCore import Qt
+
+class LineNumberArea(QTextEdit):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setReadOnly(True)
+        self.setFont(QFont("Consolas", 12))
+        self.setStyleSheet("background-color: #1E1E1E; color: #CCCCCC; border-right: 2px solid #AAAAAA; padding-right: 10px;")
+        self.setFixedWidth(70)
+
+    def update_line_numbers(self, text):
+        lines = text.split("\n")
+        numbered_lines = "\n".join(f"{i+1} ┃" for i in range(len(lines)))  # Add separator line
+        self.setPlainText(numbered_lines)
 
 class PythonSyntaxHighlighter(QSyntaxHighlighter):
     def highlightBlock(self, text):
@@ -18,12 +31,6 @@ class PythonSyntaxHighlighter(QSyntaxHighlighter):
         format_keyword.setForeground(QColor("#569CD6"))
         format_keyword.setFontWeight(QFont.Weight.Bold)
 
-        format_comment = QTextCharFormat()
-        format_comment = QTextCharFormat()
-        format_comment = QTextCharFormat()
-        format_comment = QTextCharFormat()
-        format_comment = QTextCharFormat()
-        format_comment = QTextCharFormat()
         format_comment = QTextCharFormat()
         format_comment.setForeground(QColor("#6A9955"))
         
@@ -64,8 +71,6 @@ class SimpleHighlighter(QSyntaxHighlighter):
             index = text.find('#')
             self.setFormat(index, len(text) - index, format_comment)
 
-
-
 class XAMLConverterApp(QWidget):
     def __init__(self):
         super().__init__()
@@ -78,19 +83,15 @@ class XAMLConverterApp(QWidget):
         self.upload_btn = QPushButton("Upload .xaml")
         self.upload_btn.setStyleSheet("background-color: #3498db; color: white; font-weight: bold; padding: 5px; border-radius: 5px;")
 
-        
-
         self.format_dropdown = QComboBox()
         self.format_dropdown.addItems(["Python-like Pseudocode", "Visual Basic (VB)", "YAML", "JSON", "XML (Formatted)"])
 
         self.convert_btn = QPushButton("Convert")
         self.convert_btn.setStyleSheet("background-color: #2ecc71; color: white; font-weight: bold; padding: 5px; border-radius: 5px;")
-
         self.convert_btn.clicked.connect(self.convert_xaml)
 
         self.copy_btn = QPushButton("Copy to Clipboard")
         self.copy_btn.setStyleSheet("background-color: #f39c12; color: white; font-weight: bold; padding: 5px; border-radius: 5px;")
-
         self.copy_btn.clicked.connect(self.copy_to_clipboard)
 
         self.save_btn = QPushButton("Save as File")
@@ -102,28 +103,38 @@ class XAMLConverterApp(QWidget):
         self.reset_btn.setStyleSheet("background-color: #95a5a6; color: white; font-weight: bold; padding: 5px; border-radius: 5px;")
         self.reset_btn.clicked.connect(self.reset_output)
 
+        # Initialize line number area BEFORE using it
+        self.line_numbers = LineNumberArea(self)
 
+        # Output area widget
         self.output_area = QPlainTextEdit()
         self.output_area.setReadOnly(True)
         self.output_area.setFont(QFont("Consolas", 12))
         self.output_area.setStyleSheet("background-color: #282C34; color: #ABB2BF;")
 
-        self.highlighter = SimpleHighlighter(self.output_area.document())
+        # Synchronize scrolling
+        self.output_area.verticalScrollBar().valueChanged.connect(self.sync_scroll)
+        self.line_numbers.verticalScrollBar().valueChanged.connect(self.sync_scroll)
 
+        # Horizontal layout for line numbers and output area
+        self.container_layout = QHBoxLayout()
+        self.container_layout.setSpacing(0)  # Remove spacing to keep alignment
+        self.container_layout.addWidget(self.line_numbers)
+        self.container_layout.addWidget(self.output_area)
+
+        self.highlighter = SimpleHighlighter(self.output_area.document())
 
         layout = QVBoxLayout()
         layout.addWidget(self.upload_btn)
         self.upload_btn.clicked.connect(self.upload_xaml)
 
         format_layout = QVBoxLayout()
-        format_layout = QVBoxLayout()
-        format_layout = QVBoxLayout()
         format_layout.addWidget(self.format_dropdown)
 
         layout.addWidget(self.upload_btn)
         layout.addWidget(self.format_dropdown)
         layout.addWidget(self.convert_btn)
-        layout.addWidget(self.output_area)
+        layout.addLayout(self.container_layout)
 
         btn_layout = QVBoxLayout()
         btn_layout.addWidget(self.copy_btn)
@@ -150,8 +161,6 @@ class XAMLConverterApp(QWidget):
         xaml_dict = xmltodict.parse(self.xaml_data)
         format_choice = self.format_dropdown.currentText()
 
-
-
         if format_choice == "Python-like Pseudocode":
             converted_code = self.to_pseudocode(xaml_dict)
         elif format_choice == "Visual Basic (VB)":
@@ -164,10 +173,11 @@ class XAMLConverterApp(QWidget):
             xml_string = xmltodict.unparse(xaml_dict, pretty=True)
             converted_code = minidom.parseString(xml_string).toprettyxml()
 
+        lines = converted_code.split("\n")
+        line_numbers_text = "\n".join(f"{i+1}" for i in range(len(lines)))  # Generate line numbers
 
-
-
-        self.output_area.setPlainText(converted_code)
+        self.line_numbers.update_line_numbers(converted_code)  # Update line numbers
+        self.output_area.setPlainText(converted_code)  # Update converted code
 
     def to_pseudocode(self, xaml_dict, indent=0):
         pseudocode = ""
@@ -205,13 +215,17 @@ class XAMLConverterApp(QWidget):
     def reset_output(self):
         self.output_area.clear()
 
-
     def save_file(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Save File", "", "VB Script (*.vb);;Text File (*.txt)")
         if file_path:
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(self.output_area.toPlainText())
             QMessageBox.information(self, "Saved", "File saved successfully!")
+
+    def sync_scroll(self, value):
+        """ Syncs the scrolling of line numbers and output text area """
+        self.line_numbers.verticalScrollBar().setValue(self.output_area.verticalScrollBar().value())
+        self.output_area.verticalScrollBar().setValue(value)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
