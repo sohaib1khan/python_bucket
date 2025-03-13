@@ -8,21 +8,39 @@ from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QFileDialog, QPlainTextEdit,
     QMessageBox, QComboBox, QHBoxLayout
 )
-from PyQt6.QtGui import QFont, QColor, QTextCharFormat, QSyntaxHighlighter
-from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor, QFont, QPainter
+from PyQt6.QtCore import QRect, Qt
+from PyQt6.QtWidgets import QWidget
 
-class LineNumberArea(QTextEdit):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setReadOnly(True)
-        self.setFont(QFont("Consolas", 12))
-        self.setStyleSheet("background-color: #1E1E1E; color: #CCCCCC; border-right: 2px solid #AAAAAA; padding-right: 10px;")
-        self.setFixedWidth(70)
+class LineNumberArea(QWidget):
+    def __init__(self, editor):
+        super().__init__(editor)
+        self.editor = editor
+        self.setFixedWidth(50)  # Adjust width for numbers
 
-    def update_line_numbers(self, text):
-        lines = text.split("\n")
-        numbered_lines = "\n".join(f"{i+1} ┃" for i in range(len(lines)))  # Add separator line
-        self.setPlainText(numbered_lines)
+    def paintEvent(self, event):
+        """ Paints line numbers alongside the editor """
+        painter = QPainter(self)
+        painter.fillRect(event.rect(), QColor("#1E1E1E"))  # Background color
+        painter.setFont(self.editor.font())  # Ensure font matches output_area
+
+        block = self.editor.firstVisibleBlock()
+        block_number = block.blockNumber()
+        top = self.editor.blockBoundingGeometry(block).translated(self.editor.contentOffset()).top()
+        bottom = top + self.editor.blockBoundingRect(block).height()
+
+        while block.isValid() and top <= event.rect().bottom():
+            if block.isVisible() and bottom >= event.rect().top():
+                number = str(block_number + 1)
+                painter.setPen(QColor("#CCCCCC"))  # Light gray for numbers
+                painter.drawText(0, int(top), self.width(), int(self.fontMetrics().height()), 
+                                Qt.AlignmentFlag.AlignRight, number)
+
+            block = block.next()
+            top = bottom
+            bottom = top + self.editor.blockBoundingRect(block).height()
+            block_number += 1
+
 
 class PythonSyntaxHighlighter(QSyntaxHighlighter):
     def highlightBlock(self, text):
@@ -102,19 +120,21 @@ class XAMLConverterApp(QWidget):
         self.reset_btn = QPushButton("Reset")
         self.reset_btn.setStyleSheet("background-color: #95a5a6; color: white; font-weight: bold; padding: 5px; border-radius: 5px;")
         self.reset_btn.clicked.connect(self.reset_output)
-
-        # Initialize line number area BEFORE using it
-        self.line_numbers = LineNumberArea(self)
-
-        # Output area widget
-        self.output_area = QPlainTextEdit()
+        # Create main text editor
+        self.output_area = QPlainTextEdit(self)
         self.output_area.setReadOnly(True)
         self.output_area.setFont(QFont("Consolas", 12))
-        self.output_area.setStyleSheet("background-color: #282C34; color: #ABB2BF;")
+        self.output_area.setStyleSheet("background-color: #282C34; color: #ABB2BF; padding-left: 10px;")
+
+        # Create line number area (linked to output_area)
+        self.line_numbers = LineNumberArea(self.output_area)
+
+        # Ensure line numbers update dynamically
+        self.output_area.blockCountChanged.connect(self.update_line_numbers)
+        self.output_area.updateRequest.connect(self.update_line_numbers)
 
         # Synchronize scrolling
         self.output_area.verticalScrollBar().valueChanged.connect(self.sync_scroll)
-        self.line_numbers.verticalScrollBar().valueChanged.connect(self.sync_scroll)
 
         # Horizontal layout for line numbers and output area
         self.container_layout = QHBoxLayout()
@@ -146,6 +166,12 @@ class XAMLConverterApp(QWidget):
         self.setLayout(layout)
         self.xaml_data = None
 
+    def update_line_numbers(self):
+        """ Sync line numbers with output_area """
+        self.line_numbers.repaint()
+        self.line_numbers.update()
+
+
     def upload_xaml(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open XAML File", "", "XAML Files (*.xaml)")
         if file_path:
@@ -176,8 +202,8 @@ class XAMLConverterApp(QWidget):
         lines = converted_code.split("\n")
         line_numbers_text = "\n".join(f"{i+1}" for i in range(len(lines)))  # Generate line numbers
 
-        self.line_numbers.update_line_numbers(converted_code)  # Update line numbers
-        self.output_area.setPlainText(converted_code)  # Update converted code
+        self.output_area.setPlainText(converted_code)  # Set converted code
+        self.update_line_numbers()  # Ensure line numbers update after setting text
 
     def to_pseudocode(self, xaml_dict, indent=0):
         pseudocode = ""
@@ -224,8 +250,7 @@ class XAMLConverterApp(QWidget):
 
     def sync_scroll(self, value):
         """ Syncs the scrolling of line numbers and output text area """
-        self.line_numbers.verticalScrollBar().setValue(self.output_area.verticalScrollBar().value())
-        self.output_area.verticalScrollBar().setValue(value)
+        self.line_numbers.update()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
