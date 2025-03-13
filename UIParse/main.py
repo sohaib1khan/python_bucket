@@ -16,13 +16,19 @@ class LineNumberArea(QWidget):
     def __init__(self, editor):
         super().__init__(editor)
         self.editor = editor
-        self.setFixedWidth(50)  # Adjust width for numbers
+        self.setFixedWidth(50)  
+
+    def update_width(self):
+        """ Dynamically adjust width based on number of digits in line numbers """
+        digits = max(1, len(str(self.editor.blockCount())))
+        space = 3 + self.editor.fontMetrics().horizontalAdvance('9') * digits
+        self.setFixedWidth(space)
 
     def paintEvent(self, event):
-        """ Paints line numbers alongside the editor """
+        """ Paint line numbers alongside text """
         painter = QPainter(self)
-        painter.fillRect(event.rect(), QColor("#1E1E1E"))  # Background color
-        painter.setFont(self.editor.font())  # Ensure font matches output_area
+        painter.fillRect(event.rect(), QColor("#1E1E1E"))  
+        painter.setFont(self.editor.font())
 
         block = self.editor.firstVisibleBlock()
         block_number = block.blockNumber()
@@ -32,14 +38,20 @@ class LineNumberArea(QWidget):
         while block.isValid() and top <= event.rect().bottom():
             if block.isVisible() and bottom >= event.rect().top():
                 number = str(block_number + 1)
-                painter.setPen(QColor("#CCCCCC"))  # Light gray for numbers
-                painter.drawText(0, int(top), self.width(), int(self.fontMetrics().height()), 
-                                Qt.AlignmentFlag.AlignRight, number)
+                current_block = self.editor.textCursor().block()
+
+                # Highlight active line number
+                if block == current_block:
+                    painter.fillRect(0, int(top), self.width(), int(self.fontMetrics().height()), QColor("#3E3E3E"))
+
+                painter.setPen(QColor("#CCCCCC"))
+                painter.drawText(0, int(top), self.width() - 5, int(self.fontMetrics().height()), Qt.AlignmentFlag.AlignRight, number)
 
             block = block.next()
             top = bottom
             bottom = top + self.editor.blockBoundingRect(block).height()
             block_number += 1
+
 
 
 class PythonSyntaxHighlighter(QSyntaxHighlighter):
@@ -65,19 +77,41 @@ class PythonSyntaxHighlighter(QSyntaxHighlighter):
             index = text.find('#')
             self.setFormat(index, len(text) - index, format_comment)
 
-class SimpleHighlighter(QSyntaxHighlighter):
+class MultiSyntaxHighlighter(QSyntaxHighlighter):
+    def __init__(self, document, language):
+        super().__init__(document)
+        self.language = language
+    
     def highlightBlock(self, text):
-        keywords = ['for', 'while', 'if', 'else', 'def', 'class', 'return', 'import', 'from', 'as']
-        
+        if self.language == "Python":
+            keywords = ['for', 'while', 'if', 'else', 'def', 'class', 'return', 'import', 'from', 'as']
+            color_keyword = QColor("#569CD6")
+            color_comment = QColor("#6A9955")
+            color_string = QColor("#CE9178")
+        elif self.language in ["JSON", "YAML", "XML"]:
+            keywords = []
+            color_keyword = QColor("#D19A66")
+            color_comment = QColor("#6A9955")
+            color_string = QColor("#98C379")
+        elif self.language == "VB":
+            keywords = ["Dim", "As", "Sub", "Function", "End", "If", "Then", "Else", "For", "Next", "Do", "Loop"]
+            color_keyword = QColor("#C586C0")
+            color_comment = QColor("#6A9955")
+            color_string = QColor("#CE9178")
+        else:
+            return  
+
         format_keyword = QTextCharFormat()
-        format_keyword.setForeground(QColor("#569CD6"))
+        format_keyword.setForeground(color_keyword)
         format_keyword.setFontWeight(QFont.Weight.Bold)
 
         format_comment = QTextCharFormat()
-        format_comment.setForeground(QColor("#6A9955"))
-        
+        format_comment.setForeground(color_comment)
+
+        format_string = QTextCharFormat()
+        format_string.setForeground(color_string)
+
         for word in keywords:
-            expression = f"\\b{word}\\b"
             index = text.find(word)
             while index >= 0:
                 length = len(word)
@@ -85,9 +119,18 @@ class SimpleHighlighter(QSyntaxHighlighter):
                 index = text.find(word, index + length)
 
         # Highlight comments
-        if '#' in text:
-            index = text.find('#')
+        if "#" in text:
+            index = text.find("#")
             self.setFormat(index, len(text) - index, format_comment)
+
+        # Highlight strings
+        in_string = False
+        start = -1
+        for i, char in enumerate(text):
+            if char in ('"', "'"):
+                if in_string:
+                    self.setFormat(start, i - start + 1, format_string)
+
 
 class XAMLConverterApp(QWidget):
     def __init__(self):
@@ -98,8 +141,36 @@ class XAMLConverterApp(QWidget):
 
         self.layout = QVBoxLayout()
 
+        # Initialize output text editor first
+        self.output_area = QPlainTextEdit(self)
+        self.output_area.setReadOnly(True)
+        self.output_area.setFont(QFont("Consolas", 12))
+        self.output_area.setStyleSheet("""
+            background-color: #2B2B2B; 
+            color: #E0E0E0; 
+            font-family: Consolas, Monospace;
+            font-size: 12pt;
+            padding: 5px;
+        """)
+
+        # Create line number area (linked to output_area)
+        self.line_numbers = LineNumberArea(self.output_area)
+
+        # Correct placement: Connect signals AFTER output_area & line_numbers are initialized
+        self.output_area.blockCountChanged.connect(self.line_numbers.update_width)  # Now correctly exists
+        self.output_area.updateRequest.connect(self.line_numbers.update)
+        self.output_area.verticalScrollBar().valueChanged.connect(self.line_numbers.update)
+
+        # Layout for text editor & line numbers
+        self.container_layout = QHBoxLayout()
+        self.container_layout.setSpacing(0)  # Remove spacing to keep alignment
+        self.container_layout.addWidget(self.line_numbers)
+        self.container_layout.addWidget(self.output_area)
+
+        # UI Components (Buttons, Dropdown, etc.)
         self.upload_btn = QPushButton("Upload .xaml")
         self.upload_btn.setStyleSheet("background-color: #3498db; color: white; font-weight: bold; padding: 5px; border-radius: 5px;")
+        self.upload_btn.clicked.connect(self.upload_xaml)
 
         self.format_dropdown = QComboBox()
         self.format_dropdown.addItems(["Python-like Pseudocode", "Visual Basic (VB)", "YAML", "JSON", "XML (Formatted)"])
@@ -116,41 +187,12 @@ class XAMLConverterApp(QWidget):
         self.save_btn.setStyleSheet("background-color: #e74c3c; color: white; font-weight: bold; padding: 5px; border-radius: 5px;")
         self.save_btn.clicked.connect(self.save_file)
 
-        # New Reset Button
         self.reset_btn = QPushButton("Reset")
         self.reset_btn.setStyleSheet("background-color: #95a5a6; color: white; font-weight: bold; padding: 5px; border-radius: 5px;")
         self.reset_btn.clicked.connect(self.reset_output)
-        # Create main text editor
-        self.output_area = QPlainTextEdit(self)
-        self.output_area.setReadOnly(True)
-        self.output_area.setFont(QFont("Consolas", 12))
-        self.output_area.setStyleSheet("background-color: #282C34; color: #ABB2BF; padding-left: 10px;")
 
-        # Create line number area (linked to output_area)
-        self.line_numbers = LineNumberArea(self.output_area)
-
-        # Ensure line numbers update dynamically
-        self.output_area.blockCountChanged.connect(self.update_line_numbers)
-        self.output_area.updateRequest.connect(self.update_line_numbers)
-
-        # Synchronize scrolling
-        self.output_area.verticalScrollBar().valueChanged.connect(self.sync_scroll)
-
-        # Horizontal layout for line numbers and output area
-        self.container_layout = QHBoxLayout()
-        self.container_layout.setSpacing(0)  # Remove spacing to keep alignment
-        self.container_layout.addWidget(self.line_numbers)
-        self.container_layout.addWidget(self.output_area)
-
-        self.highlighter = SimpleHighlighter(self.output_area.document())
-
+        # Add Components to Layout
         layout = QVBoxLayout()
-        layout.addWidget(self.upload_btn)
-        self.upload_btn.clicked.connect(self.upload_xaml)
-
-        format_layout = QVBoxLayout()
-        format_layout.addWidget(self.format_dropdown)
-
         layout.addWidget(self.upload_btn)
         layout.addWidget(self.format_dropdown)
         layout.addWidget(self.convert_btn)
@@ -162,14 +204,17 @@ class XAMLConverterApp(QWidget):
         btn_layout.addWidget(self.reset_btn)
 
         layout.addLayout(btn_layout)
-
         self.setLayout(layout)
-        self.xaml_data = None
+
+        self.xaml_data = None  
+
+
 
     def update_line_numbers(self):
         """ Sync line numbers with output_area """
         self.line_numbers.repaint()
         self.line_numbers.update()
+
 
 
     def upload_xaml(self):
@@ -189,21 +234,25 @@ class XAMLConverterApp(QWidget):
 
         if format_choice == "Python-like Pseudocode":
             converted_code = self.to_pseudocode(xaml_dict)
+            language = "Python"
         elif format_choice == "Visual Basic (VB)":
             converted_code = self.to_visual_basic(xaml_dict)
+            language = "VB"
         elif format_choice == "YAML":
             converted_code = yaml.dump(xaml_dict, default_flow_style=False, sort_keys=False)
+            language = "YAML"
         elif format_choice == "JSON":
             converted_code = json.dumps(xaml_dict, indent=4)
+            language = "JSON"
         elif format_choice == "XML (Formatted)":
             xml_string = xmltodict.unparse(xaml_dict, pretty=True)
             converted_code = minidom.parseString(xml_string).toprettyxml()
+            language = "XML"
 
-        lines = converted_code.split("\n")
-        line_numbers_text = "\n".join(f"{i+1}" for i in range(len(lines)))  # Generate line numbers
+        self.output_area.setPlainText(converted_code)
+        self.highlighter = MultiSyntaxHighlighter(self.output_area.document(), language)  
+        self.update_line_numbers()
 
-        self.output_area.setPlainText(converted_code)  # Set converted code
-        self.update_line_numbers()  # Ensure line numbers update after setting text
 
     def to_pseudocode(self, xaml_dict, indent=0):
         pseudocode = ""
