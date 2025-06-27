@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Bucket - Coding Learning Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', 'SF Mono', 'Consolas', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #1f4e79 75%, #3776ab 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Floating code snippets animation */
+        .floating-code {
+            position: fixed;
+            font-size: 12px;
+            color: rgba(55, 118, 171, 0.3);
+            pointer-events: none;
+            z-index: 1;
+            animation: floatUp 15s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            background: rgba(10, 10, 10, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(55, 118, 171, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3776ab 0%, #4584b6 25%, #ffd43b 50%, #ffde7a 75%, #ffe6a3 100%);
+            color: #1a1a2e;
+            padding: 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="python" width="25" height="25" patternUnits="userSpaceOnUse"><text x="5" y="15" font-family="monospace" font-size="8" fill="rgba(26,26,46,0.1)">🐍</text><text x="15" y="8" font-family="monospace" font-size="6" fill="rgba(26,26,46,0.1)">{}</text></pattern></defs><rect width="100" height="100" fill="url(%23python)"/></svg>');
+            opacity: 0.4;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 4.5em;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            font-weight: 900;
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 3px 3px 6px rgba(0,0,0,0.3), 0 0 20px rgba(55, 118, 171, 0.5); }
+            to { text-shadow: 3px 3px 6px rgba(0,0,0,0.3), 0 0 30px rgba(255, 212, 59, 0.8); }
+        }
+
+        .header p {
+            font-size: 1.7em;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.8;
+            font-style: italic;
+            margin-bottom: 25px;
+        }
+
+        .typing-animation {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1em;
+            color: #1a1a2e;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 20px;
+            border-left: 4px solid #3776ab;
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .python-badges {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .python-badge {
+            background: rgba(26, 26, 46, 0.8);
+            color: #ffd43b;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 700;
+            border: 2px solid rgba(55, 118, 171, 0.5);
+            animation: bounce 2s ease-in-out infinite;
+            transition: all 0.3s ease;
+        }
+
+        .python-badge:hover {
+            transform: scale(1.1);
+            background: rgba(55, 118, 171, 0.8);
+            color: #ffffff;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .python-badge:nth-child(1) { animation-delay: 0s; }
+        .python-badge:nth-child(2) { animation-delay: 0.3s; }
+        .python-badge:nth-child(3) { animation-delay: 0.6s; }
+        .python-badge:nth-child(4) { animation-delay: 0.9s; }
+
+        .stats-matrix {
+            background: rgba(55, 118, 171, 0.2);
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-cell {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(55, 118, 171, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-cell:hover {
+            background: rgba(55, 118, 171, 0.2);
+            transform: scale(1.05);
+        }
+
+        .stat-number {
+            font-size: 2.8em;
+            font-weight: bold;
+            color: #ffd43b;
+            display: block;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            animation: countUp 2s ease-out;
+        }
+
+        @keyframes countUp {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .code-indicator {
+            color: #4ade80;
+            font-size: 0.9em;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%);
+            border-bottom: 3px solid #3776ab;
+            position: relative;
+        }
+
+        .tabs::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #3776ab, #ffd43b, #3776ab);
+            animation: slide 3s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .tab {
+            flex: 1;
+            padding: 25px 35px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            font-weight: 700;
+            color: #9ca3af;
+            transition: all 0.4s ease;
+            position: relative;
+            font-family: inherit;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #3776ab 0%, #4584b6 100%);
+            color: #ffffff;
+            border-bottom: 4px solid #ffd43b;
+            box-shadow: 0 -4px 20px rgba(55, 118, 171, 0.4);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(55, 118, 171, 0.3);
+            color: #ffd43b;
+        }
+
+        .content {
+            min-height: 800px;
+            position: relative;
+            background: rgba(10, 10, 10, 0.8);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 50px;
+            animation: codeSlideIn 0.8s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes codeSlideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(50px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        /* Python IDE Interface */
+        .python-ide {
+            background: #1e1e1e;
+            border-radius: 15px;
+            padding: 0;
+            margin: 30px 0;
+            border: 2px solid #3776ab;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .ide-header {
+            background: linear-gradient(90deg, #2d2d30 0%, #3e3e42 100%);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+
+        .ide-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ide-tab {
+            background: #3776ab;
+            color: #ffffff;
+            padding: 8px 15px;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .ide-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .ide-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .close { background: #ff5f57; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #28ca42; }
+
+        .ide-content {
+            padding: 25px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            min-height: 300px;
+            position: relative;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            padding: 2px 0;
+            transition: all 0.3s ease;
+        }
+
+        .code-line:hover {
+            background: rgba(55, 118, 171, 0.1);
+            border-radius: 3px;
+        }
+
+        .line-number {
+            color: #858585;
+            margin-right: 20px;
+            min-width: 30px;
+            text-align: right;
+            font-size: 0.9em;
+        }
+
+        .keyword { color: #569cd6; font-weight: bold; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; font-style: italic; }
+        .function { color: #dcdcaa; }
+        .variable { color: #9cdcfe; }
+        .number { color: #b5cea8; }
+
+        /* Project Grid */
+        .project-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .project-module {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #3776ab;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(55, 118, 171, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-module::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(55, 118, 171, 0.2) 0%, transparent 70%);
+        }
+
+        .project-module:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(30, 30, 30, 1);
+            box-shadow: 0 20px 40px rgba(55, 118, 171, 0.3);
+            border-left-color: #ffd43b;
+        }
+
+        .project-module h3 {
+            color: #ffd43b;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+        }
+
+        .project-module p {
+            color: #d4d4d4;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .code-snippet {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 3px solid #3776ab;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9em;
+            animation: fadeInCode 0.6s ease;
+        }
+
+        @keyframes fadeInCode {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tech-tag {
+            background: rgba(55, 118, 171, 0.2);
+            color: #ffd43b;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            border: 1px solid rgba(55, 118, 171, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .tech-tag:hover {
+            background: rgba(255, 212, 59, 0.2);
+            color: #3776ab;
+            transform: scale(1.1);
+        }
+
+        .learning-tag {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.3);
+        }
+
+        /* Terminal Interface */
+        .python-terminal {
+            background: #0d1117;
+            border-radius: 15px;
+            padding: 0;
+            margin: 30px 0;
+            border: 2px solid #3776ab;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: linear-gradient(90deg, #161b22 0%, #21262d 100%);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .terminal-title {
+            color: #f0f6fc;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .terminal-button {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+        }
+
+        .terminal-content {
+            padding: 25px;
+            background: #0d1117;
+            min-height: 200px;
+        }
+
+        .terminal-line {
+            display: flex;
+            margin: 8px 0;
+            animation: typewriter 0.05s steps(1) infinite;
+        }
+
+        .prompt {
+            color: #3776ab;
+            margin-right: 10px;
+            font-weight: 700;
+        }
+
+        .command {
+            color: #ffd43b;
+            font-weight: 600;
+        }
+
+        .output {
+            color: #7c3aed;
+            margin-left: 15px;
+        }
+
+        .success {
+            color: #4ade80;
+            font-weight: 600;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        /* Learning Path Timeline */
+        .learning-timeline {
+            position: relative;
+            padding: 40px 0;
+            margin: 30px 0;
+        }
+
+        .learning-timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #3776ab, #ffd43b, #4ade80);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-left: 80px;
+            margin-bottom: 40px;
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(55, 118, 171, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item::before {
+            content: '🐍';
+            position: absolute;
+            left: -65px;
+            top: 20px;
+            width: 30px;
+            height: 30px;
+            background: #3776ab;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: 4px solid #0d1117;
+            animation: spin 10s linear infinite;
+        }
+
+        .timeline-item:hover {
+            background: rgba(30, 30, 30, 1);
+            transform: translateX(10px);
+        }
+
+        .timeline-item h4 {
+            color: #ffd43b;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-mastered {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+
+        .status-learning {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .status-planned {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: rgba(55, 118, 171, 0.1);
+            border: 1px solid rgba(55, 118, 171, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 5px solid #3776ab;
+            position: relative;
+        }
+
+        .info-box::before {
+            content: '💡';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #0d1117;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 1.2em;
+        }
+
+        .info-box h4 {
+            color: #ffd43b;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .learning-box {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-left: 5px solid #4ade80;
+        }
+
+        .learning-box::before {
+            content: '🚀';
+        }
+
+        .learning-box h4 {
+            color: #4ade80;
+        }
+
+        .code-box {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-left: 5px solid #8b5cf6;
+        }
+
+        .code-box::before {
+            content: '⚡';
+        }
+
+        .code-box h4 {
+            color: #8b5cf6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .project-matrix, .stats-matrix {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .header h1 {
+                font-size: 3.2em;
+            }
+
+            .timeline-item {
+                margin-left: 50px;
+            }
+
+            .learning-timeline::before {
+                left: 15px;
+            }
+
+            .timeline-item::before {
+                left: -35px;
+            }
+
+            .python-badges {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .highlight {
+            background: rgba(55, 118, 171, 0.3);
+            padding: 4px 8px;
+            border-radius: 5px;
+            color: #ffd43b;
+            font-weight: 700;
+        }
+
+        /* Run Button Animation */
+        .run-button {
+            background: linear-gradient(45deg, #4ade80, #22c55e);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-family: inherit;
+        }
+
+        .run-button:hover {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            transform: scale(1.05);
+        }
+
+        .run-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Python syntax highlighting classes */
+        .py-def { color: #569cd6; }
+        .py-class { color: #4ec9b0; }
+        .py-import { color: #c586c0; }
+        .py-decorator { color: #dcdcaa; }
+    </style>
+</head>
+<body>
+    <!-- Floating Code Animation -->
+    <div class="floating-code" style="left: 10%; animation-delay: 0s;">def learn_python():</div>
+    <div class="floating-code" style="left: 20%; animation-delay: 2s;">import pandas as pd</div>
+    <div class="floating-code" style="left: 30%; animation-delay: 4s;">for i in range(100):</div>
+    <div class="floating-code" style="left: 40%; animation-delay: 6s;">if __name__ == "__main__":</div>
+    <div class="floating-code" style="left: 50%; animation-delay: 8s;">class PythonLearner:</div>
+    <div class="floating-code" style="left: 60%; animation-delay: 10s;">return "Hello World!"</div>
+    <div class="floating-code" style="left: 70%; animation-delay: 12s;">@property</div>
+    <div class="floating-code" style="left: 80%; animation-delay: 14s;">try: except: finally:</div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>🐍 Python Bucket</h1>
+                <p>Coding Learning Journey</p>
+                <p class="subtitle">From Zero to Hero • One Script at a Time • Always Coding</p>
+                <div class="typing-animation">
+                    <span class="py-def">def</span> <span class="function">learn_python</span>(): <span class="cursor">|</span>
+                </div>
+                <div class="python-badges">
+                    <span class="python-badge">🔥 Learn by Doing</span>
+                    <span class="python-badge">⚡ Hands-On Projects</span>
+                    <span class="python-badge">🚀 Real Automation</span>
+                    <span class="python-badge">📈 Continuous Growth</span>
+                </div>
+            </div>
+            <div class="stats-matrix">
+                <div class="stat-cell">
+                    <span class="stat-number">12+</span>
+                    <div class="stat-label">Python Projects</div>
+                    <div class="code-indicator">Growing Codebase</div>
+                </div>
+                <div class="stat-cell">
+                    <span class="stat-number">∞</span>
+                    <div class="stat-label">Lines of Code</div>
+                    <div class="code-indicator">Always Expanding</div>
+                </div>
+                <div class="stat-cell">
+                    <span class="stat-number">100%</span>
+                    <div class="stat-label">Hands-On Learning</div>
+                    <div class="code-indicator">No Theory Only</div>
+                </div>
+                <div class="stat-cell">
+                    <span class="stat-number">24/7</span>
+                    <div class="stat-label">Coding Mindset</div>
+                    <div class="code-indicator">Always Thinking in Python</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('journey')">🎯 Coding Journey</button>
+            <button class="tab" onclick="showTab('projects')">🚀 Project Portfolio</button>
+            <button class="tab" onclick="showTab('skills')">💪 Skills & Tools</button>
+            <button class="tab" onclick="showTab('playground')">🛝 Code Playground</button>
+            <button class="tab" onclick="showTab('automation')">⚙️ Automation Lab</button>
+        </div>
+
+        <div class="content">
+            <!-- Coding Journey Tab -->
+            <div class="tab-content active" id="journey">
+                <div class="learning-timeline">
+                    <div class="timeline-item">
+                        <h4>Python Fundamentals <span class="status-badge status-mastered">✅ Mastered</span></h4>
+                        <p>Variables, data types, loops, functions, and basic OOP. Built solid foundation through practical exercises and real-world examples.</p>
+                        <div class="code-snippet">
+                            <span class="keyword">def</span> <span class="function">hello_world</span>():<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">print</span>(<span class="string">"Hello, Python World!"</span>)
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>Data Structures & Algorithms <span class="status-badge status-mastered">✅ Mastered</span></h4>
+                        <p>Lists, dictionaries, sets, tuples, and common algorithms. Understanding how to choose the right data structure for the job.</p>
+                        <div class="code-snippet">
+                            <span class="variable">data</span> = {<span class="string">"projects"</span>: [<span class="string">"automation"</span>, <span class="string">"web_scraping"</span>]}<br>
+                            <span class="keyword">for</span> <span class="variable">project</span> <span class="keyword">in</span> <span class="variable">data</span>[<span class="string">"projects"</span>]:
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>Web Development & APIs <span class="status-badge status-learning">🔄 Learning</span></h4>
+                        <p>Flask, FastAPI, requests library, and building RESTful APIs. Creating web applications and consuming external APIs.</p>
+                        <div class="code-snippet">
+                            <span class="keyword">from</span> <span class="variable">flask</span> <span class="keyword">import</span> <span class="function">Flask</span><br>
+                            <span class="variable">app</span> = <span class="function">Flask</span>(<span class="variable">__name__</span>)
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>Data Science & Analytics <span class="status-badge status-learning">🔄 Learning</span></h4>
+                        <p>Pandas, NumPy, Matplotlib, and data analysis. Building dashboards and extracting insights from data.</p>
+                        <div class="code-snippet">
+                            <span class="keyword">import</span> <span class="variable">pandas</span> <span class="keyword">as</span> <span class="variable">pd</span><br>
+                            <span class="variable">df</span> = <span class="variable">pd</span>.<span class="function">read_csv</span>(<span class="string">"data.csv"</span>)
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>DevOps Automation <span class="status-badge status-planned">📅 Planned</span></h4>
+                        <p>Infrastructure automation, deployment scripts, and CI/CD integration. Making Python work seamlessly with DevOps workflows.</p>
+                        <div class="code-snippet">
+                            <span class="keyword">import</span> <span class="variable">subprocess</span><br>
+                            <span class="variable">result</span> = <span class="variable">subprocess</span>.<span class="function">run</span>([<span class="string">"kubectl"</span>, <span class="string">"get"</span>, <span class="string">"pods"</span>])
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>Machine Learning & AI <span class="status-badge status-planned">📅 Planned</span></h4>
+                        <p>Scikit-learn, TensorFlow, and building intelligent applications. Exploring the intersection of Python and artificial intelligence.</p>
+                        <div class="code-snippet">
+                            <span class="keyword">from</span> <span class="variable">sklearn.model_selection</span> <span class="keyword">import</span> <span class="function">train_test_split</span><br>
+                            <span class="variable">X_train</span>, <span class="variable">X_test</span> = <span class="function">train_test_split</span>(<span class="variable">data</span>)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="learning-box">
+                    <h4>🚀 Learning Philosophy</h4>
+                    <p>I believe in <span class="highlight">learning by building</span>. Every concept I learn gets immediately applied in a practical project. Theory without practice is meaningless - I code to understand, not just to complete exercises. Each project teaches multiple concepts simultaneously!</p>
+                </div>
+
+                <div class="code-box">
+                    <h4>⚡ Continuous Improvement</h4>
+                    <p>This repository grows daily with new experiments, better solutions, and refactored code. I constantly revisit old projects to apply new knowledge and improve implementations. <span class="highlight">Version 2.0 is always better than 1.0!</span></p>
+                </div>
+            </div>
+
+            <!-- Project Portfolio Tab -->
+            <div class="tab-content" id="projects">
+                <div class="project-matrix">
+                    <div class="project-module">
+                        <h3>🌐 Web Applications</h3>
+                        <p>Full-stack web applications built with modern Python frameworks and best practices.</p>
+                        <div class="code-snippet">
+                            <span class="py-decorator">@app.route</span>(<span class="string">"/api/data"</span>)<br>
+                            <span class="py-def">def</span> <span class="function">get_data</span>():
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Flask</span>
+                            <span class="tech-tag">FastAPI</span>
+                            <span class="tech-tag">SQLAlchemy</span>
+                            <span class="learning-tag">Learning</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>🤖 Automation Scripts</h3>
+                        <p>Practical automation solutions for daily tasks, system administration, and workflow optimization.</p>
+                        <div class="code-snippet">
+                            <span class="py-import">import</span> <span class="variable">os</span>, <span class="variable">sys</span>, <span class="variable">subprocess</span><br>
+                            <span class="py-def">def</span> <span class="function">automate_task</span>():
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Selenium</span>
+                            <span class="tech-tag">Schedule</span>
+                            <span class="tech-tag">Requests</span>
+                            <span class="tech-tag">OS</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>📊 Data Analysis Tools</h3>
+                        <p>Data processing, visualization, and analysis tools for extracting insights from various data sources.</p>
+                        <div class="code-snippet">
+                            <span class="py-import">import</span> <span class="variable">pandas</span> <span class="keyword">as</span> <span class="variable">pd</span><br>
+                            <span class="variable">df</span>.<span class="function">groupby</span>(<span class="string">"category"</span>).<span class="function">sum</span>()
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">NumPy</span>
+                            <span class="tech-tag">Matplotlib</span>
+                            <span class="tech-tag">Plotly</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>🔧 Utility Tools</h3>
+                        <p>Command-line utilities, helper scripts, and productivity tools for everyday development tasks.</p>
+                        <div class="code-snippet">
+                            <span class="py-import">import</span> <span class="variable">click</span><br>
+                            <span class="py-decorator">@click.command</span>()
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Click</span>
+                            <span class="tech-tag">Argparse</span>
+                            <span class="tech-tag">JSON</span>
+                            <span class="tech-tag">YAML</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>🎮 Fun Experiments</h3>
+                        <p>Creative projects, games, and experimental code for exploring Python's capabilities.</p>
+                        <div class="code-snippet">
+                            <span class="py-import">import</span> <span class="variable">random</span><br>
+                            <span class="variable">magic_answer</span> = <span class="variable">random</span>.<span class="function">choice</span>(<span class="variable">responses</span>)
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Pygame</span>
+                            <span class="tech-tag">Tkinter</span>
+                            <span class="tech-tag">Random</span>
+                            <span class="learning-tag">Exploring</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>🔐 Security Tools</h3>
+                        <p>Security-focused applications, monitoring tools, and penetration testing utilities.</p>
+                        <div class="code-snippet">
+                            <span class="py-import">import</span> <span class="variable">hashlib</span>, <span class="variable">secrets</span><br>
+                            <span class="variable">secure_hash</span> = <span class="variable">hashlib</span>.<span class="function">sha256</span>()
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Cryptography</span>
+                            <span class="tech-tag">Hashlib</span>
+                            <span class="tech-tag">Scapy</span>
+                            <span class="learning-tag">Exploring</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="python-terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-title">🐍 Python Project Showcase</div>
+                        <div class="terminal-controls">
+                            <div class="terminal-button close"></div>
+                            <div class="terminal-button minimize"></div>
+                            <div class="terminal-button maximize"></div>
+                        </div>
+                    </div>
+                    <div class="terminal-content">
+                        <div class="terminal-line">
+                            <span class="prompt">python3</span>
+                            <span class="command">bookmark_manager.py --list</span>
+                            <span class="output success">✓ 150+ bookmarks organized</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="prompt">python3</span>
+                            <span class="command">system_monitor.py --dashboard</span>
+                            <span class="output">🖥️ Real-time monitoring active</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="prompt">python3</span>
+                            <span class="command">command_manager.py --interactive</span>
+                            <span class="output success">⚡ CLI wizard started</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="prompt">python3</span>
+                            <span class="command">magic_ball.py "Will I master Python?"</span>
+                            <span class="output">🎱 "It is certain!"</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="prompt">python3</span>
+                            <span class="command">rss_parser.py --fetch-all</span>
+                            <span class="output success">📡 500+ articles processed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 Project Philosophy</h4>
+                    <p>Every project solves a <span class="highlight">real problem</span> while teaching new concepts. I don't build toy applications - I create tools I actually use. From bookmark management to system monitoring, each project serves a practical purpose in my daily workflow while expanding my Python knowledge.</p>
+                </div>
+            </div>
+
+            <!-- Skills & Tools Tab -->
+            <div class="tab-content" id="skills">
+                <div class="python-ide">
+                    <div class="ide-header">
+                        <div class="ide-tabs">
+                            <div class="ide-tab">skills.py</div>
+                            <div class="ide-tab">tools.py</div>
+                        </div>
+                        <div class="ide-controls">
+                            <div class="ide-button close"></div>
+                            <div class="ide-button minimize"></div>
+                            <div class="ide-button maximize"></div>
+                        </div>
+                    </div>
+                    <div class="ide-content">
+                        <button class="run-button">▶ Run</button>
+                        <div class="code-line">
+                            <span class="line-number">1</span>
+                            <span class="py-class">class</span> <span class="function">PythonDeveloper</span>:
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">2</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="py-def">def</span> <span class="function">__init__</span>(<span class="variable">self</span>):
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">3</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">self</span>.<span class="variable">core_skills</span> = [
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">4</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Python 3.x"</span>, <span class="string">"OOP"</span>, <span class="string">"Data Structures"</span>,
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">5</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Web Development"</span>, <span class="string">"API Development"</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">6</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">7</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">self</span>.<span class="variable">frameworks</span> = [
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">8</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Flask"</span>, <span class="string">"FastAPI"</span>, <span class="string">"Django"</span>, <span class="string">"Pandas"</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">9</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">10</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">self</span>.<span class="variable">tools</span> = [
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">11</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"VS Code"</span>, <span class="string">"Git"</span>, <span class="string">"Docker"</span>, <span class="string">"Linux"</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">12</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">13</span>
+                            
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">14</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="py-def">def</span> <span class="function">learn_continuously</span>(<span class="variable">self</span>):
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">15</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="string">"Always coding, always learning!"</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-matrix">
+                    <div class="project-module">
+                        <h3>🏗️ Core Python Skills</h3>
+                        <p>Solid foundation in Python fundamentals and advanced concepts.</p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Python 3.x</span>
+                            <span class="tech-tag">OOP</span>
+                            <span class="tech-tag">Decorators</span>
+                            <span class="tech-tag">Generators</span>
+                            <span class="tech-tag">Context Managers</span>
+                            <span class="tech-tag">Async/Await</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>🌐 Web Development</h3>
+                        <p>Building web applications and APIs with modern Python frameworks.</p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Flask</span>
+                            <span class="tech-tag">FastAPI</span>
+                            <span class="learning-tag">Django</span>
+                            <span class="tech-tag">SQLAlchemy</span>
+                            <span class="tech-tag">Jinja2</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>📊 Data & Analytics</h3>
+                        <p>Data manipulation, analysis, and visualization capabilities.</p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">NumPy</span>
+                            <span class="tech-tag">Matplotlib</span>
+                            <span class="learning-tag">Plotly</span>
+                            <span class="learning-tag">Seaborn</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>⚙️ DevOps Integration</h3>
+                        <p>Automation scripts and tools for DevOps workflows.</p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Subprocess</span>
+                            <span class="tech-tag">OS</span>
+                            <span class="tech-tag">Paramiko</span>
+                            <span class="learning-tag">Fabric</span>
+                            <span class="tech-tag">Requests</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="learning-box">
+                    <h4>🚀 Skill Development Strategy</h4>
+                    <p>I learn by building <span class="highlight">progressively complex projects</span>. Each new skill gets immediately applied in practical scenarios. I don't just read documentation - I implement features, break things, debug issues, and refactor code until concepts become second nature.</p>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 Next Learning Targets</h4>
+                    <p>Expanding into <span class="highlight">machine learning</span> with scikit-learn, exploring <span class="highlight">async programming</span> patterns, and diving deeper into <span class="highlight">performance optimization</span>. Always pushing the boundaries of what I can build with Python!</p>
+                </div>
+            </div>
+
+            <!-- Code Playground Tab -->
+            <div class="tab-content" id="playground">
+                <div class="python-ide">
+                    <div class="ide-header">
+                        <div class="ide-tabs">
+                            <div class="ide-tab">playground.py</div>
+                            <div class="ide-tab">experiments.py</div>
+                        </div>
+                        <div class="ide-controls">
+                            <div class="ide-button close"></div>
+                            <div class="ide-button minimize"></div>
+                            <div class="ide-button maximize"></div>
+                        </div>
+                    </div>
+                    <div class="ide-content">
+                        <button class="run-button" onclick="runCode()">▶ Run</button>
+                        <div class="code-line">
+                            <span class="line-number">1</span>
+                            <span class="comment"># 🎮 Python Playground - Where Ideas Come to Life</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">2</span>
+                            <span class="py-import">import</span> <span class="variable">random</span>, <span class="variable">datetime</span>, <span class="variable">json</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">3</span>
+                            
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">4</span>
+                            <span class="py-def">def</span> <span class="function">code_experiment</span>():
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">5</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"""Daily coding experiments and quick prototypes"""</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">6</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">ideas</span> = [
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">7</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Build a file organizer"</span>,
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">8</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Create a password generator"</span>,
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">9</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Design a system monitor"</span>,
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">10</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Make a web scraper"</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">11</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;]
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">12</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="variable">random</span>.<span class="function">choice</span>(<span class="variable">ideas</span>)
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">13</span>
+                            
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">14</span>
+                            <span class="comment"># 🚀 Run the experiment!</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">15</span>
+                            <span class="keyword">if</span> <span class="variable">__name__</span> == <span class="string">"__main__"</span>:
+                        </div>
+                        <div class="code-line">
+                            <span class="line-number">16</span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">print</span>(<span class="function">code_experiment</span>())
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-matrix">
+                    <div class="project-module">
+                        <h3>🎯 Quick Prototypes</h3>
+                        <p>Rapid prototyping and proof-of-concept implementations.</p>
+                        <div class="code-snippet">
+                            <span class="comment"># 5-minute file organizer</span><br>
+                            <span class="py-import">import</span> <span class="variable">os</span>, <span class="variable">shutil</span><br>
+                            <span class="keyword">for</span> <span class="variable">file</span> <span class="keyword">in</span> <span class="function">os.listdir</span>():
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">OS</span>
+                            <span class="tech-tag">Pathlib</span>
+                            <span class="tech-tag">Shutil</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>🧪 Code Experiments</h3>
+                        <p>Testing new concepts and exploring Python's capabilities.</p>
+                        <div class="code-snippet">
+                            <span class="comment"># Testing decorators</span><br>
+                            <span class="py-decorator">@timer</span><br>
+                            <span class="py-def">def</span> <span class="function">experimental_function</span>():
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Decorators</span>
+                            <span class="tech-tag">Generators</span>
+                            <span class="tech-tag">Context Managers</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>🎮 Fun Challenges</h3>
+                        <p>Coding challenges and creative solutions to interesting problems.</p>
+                        <div class="code-snippet">
+                            <span class="comment"># Magic 8-ball implementation</span><br>
+                            <span class="variable">responses</span> = [<span class="string">"Yes"</span>, <span class="string">"No"</span>, <span class="string">"Maybe"</span>]<br>
+                            <span class="keyword">return</span> <span class="variable">random</span>.<span class="function">choice</span>(<span class="variable">responses</span>)
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Random</span>
+                            <span class="tech-tag">Algorithms</span>
+                            <span class="learning-tag">Creative</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="python-terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-title">🎮 Interactive Python Shell</div>
+                        <div class="terminal-controls">
+                            <div class="terminal-button close"></div>
+                            <div class="terminal-button minimize"></div>
+                            <div class="terminal-button maximize"></div>
+                        </div>
+                    </div>
+                    <div class="terminal-content" id="playground-output">
+                        <div class="terminal-line">
+                            <span class="prompt">>>></span>
+                            <span class="command">print("Welcome to Python Playground!")</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="output success">Welcome to Python Playground!</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="prompt">>>></span>
+                            <span class="command">import this</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="output">The Zen of Python, by Tim Peters</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="output">Beautiful is better than ugly.</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="output">Simple is better than complex.</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="prompt">>>></span>
+                            <span class="cursor">|</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-box">
+                    <h4>⚡ Experimental Zone</h4>
+                    <p>This is where <span class="highlight">crazy ideas</span> become working code. No idea is too wild, no experiment too small. I use this space to test concepts, break conventions, and discover new ways to solve problems with Python.</p>
+                </div>
+            </div>
+
+            <!-- Automation Lab Tab -->
+            <div class="tab-content" id="automation">
+                <div class="project-matrix">
+                    <div class="project-module">
+                        <h3>🤖 System Automation</h3>
+                        <p>Scripts that automate repetitive tasks and system administration.</p>
+                        <div class="code-snippet">
+                            <span class="py-import">import</span> <span class="variable">subprocess</span>, <span class="variable">schedule</span><br>
+                            <span class="py-def">def</span> <span class="function">backup_system</span>():<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">subprocess</span>.<span class="function">run</span>([<span class="string">"rsync"</span>, <span class="string">"-av"</span>, <span class="string">"/home/"</span>, <span class="string">"/backup/"</span>])
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Subprocess</span>
+                            <span class="tech-tag">Schedule</span>
+                            <span class="tech-tag">OS</span>
+                            <span class="tech-tag">Cron</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>📡 Web Automation</h3>
+                        <p>Web scraping, API interactions, and browser automation.</p>
+                        <div class="code-snippet">
+                            <span class="py-import">from</span> <span class="variable">selenium</span> <span class="py-import">import</span> <span class="variable">webdriver</span><br>
+                            <span class="variable">driver</span> = <span class="variable">webdriver</span>.<span class="function">Chrome</span>()<br>
+                            <span class="variable">driver</span>.<span class="function">get</span>(<span class="string">"https://example.com"</span>)
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Selenium</span>
+                            <span class="tech-tag">BeautifulSoup</span>
+                            <span class="tech-tag">Requests</span>
+                            <span class="tech-tag">APIs</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>📊 Data Processing</h3>
+                        <p>Automated data collection, processing, and reporting workflows.</p>
+                        <div class="code-snippet">
+                            <span class="py-import">import</span> <span class="variable">pandas</span> <span class="keyword">as</span> <span class="variable">pd</span><br>
+                            <span class="variable">df</span> = <span class="variable">pd</span>.<span class="function">read_csv</span>(<span class="string">"data.csv"</span>)<br>
+                            <span class="variable">report</span> = <span class="variable">df</span>.<span class="function">describe</span>()
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">CSV</span>
+                            <span class="tech-tag">JSON</span>
+                            <span class="tech-tag">Excel</span>
+                        </div>
+                    </div>
+
+                    <div class="project-module">
+                        <h3>🔗 DevOps Integration</h3>
+                        <p>Tools that bridge Python with DevOps workflows and infrastructure.</p>
+                        <div class="code-snippet">
+                            <span class="py-import">import</span> <span class="variable">paramiko</span><br>
+                            <span class="variable">ssh</span> = <span class="variable">paramiko</span>.<span class="function">SSHClient</span>()<br>
+                            <span class="variable">ssh</span>.<span class="function">exec_command</span>(<span class="string">"kubectl get pods"</span>)
+                        </div>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Paramiko</span>
+                            <span class="tech-tag">Docker SDK</span>
+                            <span class="tech-tag">Kubernetes</span>
+                            <span class="learning-tag">Ansible</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="python-terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-title">🤖 Automation Controller</div>
+                        <div class="terminal-controls">
+                            <div class="terminal-button close"></div>
+                            <div class="terminal-button minimize"></div>
+                            <div class="terminal-button maximize"></div>
+                        </div>
+                    </div>
+                    <div class="terminal-content">
+                        <div class="terminal-line">
+                            <span class="prompt">automation$</span>
+                            <span class="command">python bookmark_manager.py --sync</span>
+                            <span class="output success">✓ 200 bookmarks synchronized</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="prompt">automation$</span>
+                            <span class="command">python system_monitor.py --health-check</span>
+                            <span class="output">🟢 CPU: 23% | RAM: 45% | Disk: 67%</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="prompt">automation$</span>
+                            <span class="command">python rss_updater.py --fetch-latest</span>
+                            <span class="output success">📡 150 new articles processed</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="prompt">automation$</span>
+                            <span class="command">python unifi_dashboard.py --status</span>
+                            <span class="output">📊 Network performance dashboard active</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="prompt">automation$</span>
+                            <span class="command">python ansible_controller.py --deploy</span>
+                            <span class="output success">🚀 Infrastructure deployment complete</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="learning-box">
+                    <h4>🚀 Automation Philosophy</h4>
+                    <p>If I do something more than twice, <span class="highlight">I automate it</span>. Python becomes my digital assistant, handling repetitive tasks while I focus on creative problem-solving. Every script saves time and reduces human error!</p>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 Real-World Impact</h4>
+                    <p>These automation scripts run in my daily workflow, managing everything from system monitoring to data processing. They're not just learning exercises - they're <span class="highlight">production tools</span> that make my DevOps work more efficient and reliable.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function showTab(tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Simulate code execution
+        function runCode() {
+            const output = document.getElementById('playground-output');
+            if (output) {
+                const newLine = document.createElement('div');
+                newLine.className = 'terminal-line';
+                newLine.innerHTML = '<span class="output success">🚀 Code executed successfully!</span>';
+                output.appendChild(newLine);
+                
+                setTimeout(() => {
+                    output.removeChild(newLine);
+                }, 3000);
+            }
+        }
+
+        // Typing animation for header
+        function typewriter() {
+            const text = 'return "Learning never stops!"';
+            const element = document.querySelector('.typing-animation');
+            if (element) {
+                let i = element.textContent.indexOf(':') + 2;
+                const timer = setInterval(() => {
+                    if (i < text.length) {
+                        element.innerHTML = element.innerHTML.slice(0, -1) + text.charAt(i) + '<span class="cursor">|</span>';
+                        i++;
+                    } else {
+                        clearInterval(timer);
+                    }
+                }, 100);
+            }
+        }
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects
+            const modules = document.querySelectorAll('.project-module, .stat-cell');
+            modules.forEach(module => {
+                module.addEventListener('mouseenter', function() {
+                    this.style.transform = this.classList.contains('stat-cell') ? 'scale(1.05)' : 'translateY(-10px) scale(1.02)';
+                });
+                
+                module.addEventListener('mouseleave', function() {
+                    this.style.transform = 'none';
+                });
+            });
+
+            // Start typing animation after a delay
+            setTimeout(typewriter, 2000);
+
+            // Add random floating code snippets
+            setInterval(() => {
+                const codes = [
+                    'lambda x: x**2',
+                    'list(map(func, iterable))',
+                    'with open("file.txt") as f:',
+                    '[x for x in range(10)]',
+                    'async def main():',
+                    'yield from iterator'
+                ];
+                
+                const code = document.createElement('div');
+                code.className = 'floating-code';
+                code.textContent = codes[Math.floor(Math.random() * codes.length)];
+                code.style.left = Math.random() * 100 + '%';
+                code.style.animationDuration = (15 + Math.random() * 10) + 's';
+                document.body.appendChild(code);
+                
+                setTimeout(() => {
+                    if (document.body.contains(code)) {
+                        document.body.removeChild(code);
+                    }
+                }, 25000);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
