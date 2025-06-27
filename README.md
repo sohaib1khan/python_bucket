@@ -1,7 +1,18 @@
-# Python Notes & Projects 🐍💻
+# Python Notes & Projects 🐍📚
 
-📌 What is this repo?
-This is where I document my Python learning journey, experiments, and full-fledged projects. It’s a mix of structured learning, hands-on coding, and real-world automation!
+<div align="center">
+
+[![Python Bucket Interactive Documentation](https://img.shields.io/badge/🐍_INTERACTIVE-DOCUMENTATION-3776ab?style=for-the-badge&labelColor=0a0a0a&color=ffd43b&logoColor=white)](https://sohaib1khan.github.io/python_bucket/)
+
+**🎯 Learning Journey | 🚀 12+ Projects | 🛝 Code Playground | ⚙️ Automation Lab**
+
+*⚡ Learn by Doing • 🔥 Always Coding • 📈 Continuous Growth*
+
+---
+
+</div>
+
+📍 What is this repo? This is where I document my Python learning journey, experiments, and full-fledged projects. It’s a mix of structured learning, hands-on coding, and real-world automation!
 
 📂 What’s inside?
 
