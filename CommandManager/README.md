@@ -1,8 +1,8 @@
-# 🚀 CommandManager
+#  CommandManager
 
 CommandManager is a **lightweight yet powerful command execution tool** designed to make managing and running system commands seamless. With built-in **autocomplete**, a **dark mode UI**, and the ability to **store custom commands**, it serves as an efficient alternative to the traditional terminal.
 
-## 🎯 Features
+## Features
 
 - **Command Autocomplete**: Suggests system and user-defined commands.
 - **Dark Mode UI**: Eye-friendly interface optimized for long usage.
@@ -13,9 +13,9 @@ CommandManager is a **lightweight yet powerful command execution tool** designed
 
 ---
 
-## 🛠 Installation & Usage
+## Installation & Usage
 
-### 🔍 Requirements
+### Requirements
 
 Before installing, ensure you have the following dependencies:
 
@@ -29,7 +29,7 @@ If missing, the script will prompt you to install them.
 
 ---
 
-### 📦 Installation (Automatic)
+###  Installation (Automatic)
 
 To get started, simply run the **build script**:
 
@@ -44,7 +44,7 @@ The script provides two options:
 
 ---
 
-### 🖥️ Running the Application
+### Running the Application
 
 Once built, run the executable from the **Build** directory:
 
@@ -61,33 +61,33 @@ python main.py
 
 ---
 
-## ⚡ Features in Detail
+## Features in Detail
 
-### 🔥 Smart Autocomplete
+### Smart Autocomplete
 
 CommandManager dynamically loads both **system commands** and **user-defined commands**, giving you a fast and efficient way to execute commands.
 
-### 🎨 Beautiful Dark UI
+### Beautiful Dark UI
 
 - **Header:** Greets you with your hostname.
 - **Command List:** Displays saved commands for easy access.
 - **Output Box:** Shows real-time terminal execution results.
 - **Footer:** Displays maintainer information.
 
-### 📜 Managing Commands
+### Managing Commands
 
 - **Add New Commands**: Click the **➕ Add Command** button to store frequently used commands.
 - **Edit Commands**: Modify stored commands effortlessly.
 - **Delete Commands**: Remove unwanted commands from your list.
-- **Run Commands**: Select a command and hit **▶️ Run Command**.
+- **Run Commands**: Select a command and hit **Run Command**.
 
-### 🚀 Execution & Output
+### Execution & Output
 
 The terminal-style output box logs every executed command, displaying results just like a real terminal. However, **directory changes (****`cd`****) are not yet supported**.
 
 ---
 
-## 🛠 Development & Contribution
+## Development & Contribution
 
 We love contributions! If you want to improve CommandManager, follow these steps:
 
@@ -118,7 +118,7 @@ We love contributions! If you want to improve CommandManager, follow these steps
 
 ---
 
-## 🎉 Future Enhancements
+##  Future Enhancements
 
 🔹 Full Terminal Emulation (Support for `cd` and interactive sessions)\
 🔹 Theming Options (Custom color schemes)\
