@@ -1,6 +1,6 @@
 # 🎱 Magic 8 Ball - Desktop App
 
-## 📌 Overview
+##  Overview
 
 The **Magic 8 Ball** is a fun, interactive desktop application that answers your questions with randomized responses, just like the classic Magic 8 Ball toy!
 
@@ -8,7 +8,7 @@ This app is built using **Python and PyQt6** and includes **animations, sound ef
 
 ---
 
-## 🚀 Features
+## Features
 
 - 🎭 **Animated 8 Ball** that shakes before revealing an answer.
 - 🎶 **Sound Effects** for an immersive experience.
@@ -18,7 +18,7 @@ This app is built using **Python and PyQt6** and includes **animations, sound ef
 
 ---
 
-## 🛠️ Installation
+## Installation
 
 ### 1️⃣ Install Dependencies
 
@@ -38,7 +38,7 @@ python main.py
 
 ---
 
-## 📦 Building Executable
+## Building Executable
 
 You can package the app as a standalone executable using **PyInstaller**.
 
@@ -52,7 +52,7 @@ The generated app file will be in the `dist/` folder.
 
 ---
 
-## 🎨 Assets & Resources
+## Assets & Resources
 
 This app includes:
 
